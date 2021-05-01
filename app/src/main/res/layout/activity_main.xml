@@ -87,6 +87,17 @@
         android:weightSum="1.0">
     </LinearLayout>
 
+    <Button
+        android:id="@+id/bt_start_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Game"
+        app:layout_constraintTop_toBottomOf="@+id/row5"
+        app:layout_constraintBottom_toTopOf="@+id/helloRoom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+    />
+
     <TextView
         android:id="@+id/helloRoom"
         android:layout_width="wrap_content"
@@ -96,7 +107,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/row5" />
-
 
     <TextView
         android:id="@+id/counter_identifier"

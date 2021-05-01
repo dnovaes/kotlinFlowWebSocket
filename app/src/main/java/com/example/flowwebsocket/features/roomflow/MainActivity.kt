@@ -58,14 +58,17 @@ class MainActivity : AppCompatActivity() {
         binding.row3.setRowCells(this.applicationContext, onClick)
         binding.row4.setRowCells(this.applicationContext, onClick)
         binding.row5.setRowCells(this.applicationContext, onClick)
+        binding.btStartGame.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.startGame().collect {
+                    showMob(it.posX, it.posY)
+                }
+            }
+        }
     }
 
     private fun setEvents() {
         lifecycleScope.launch {
-
-            viewModel.startGame().collect {
-                showMob(it.posX, it.posY)
-            }
 /*
             viewModel.mockedRealTimePositions().collect { roomData ->
                 binding.helloRoom.text = "${roomData.name}: posX: ${roomData.posX}, posY: ${roomData.posY}"
