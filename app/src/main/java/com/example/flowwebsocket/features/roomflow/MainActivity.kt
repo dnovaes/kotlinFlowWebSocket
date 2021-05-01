@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initComponents()
-        setEvents()
     }
 
     override fun onDestroy() {
@@ -36,10 +35,14 @@ class MainActivity : AppCompatActivity() {
         setupScreenLayout { view, rowPos, columnPos ->
             val counter = parseInt(binding.counterIdentifier.text.toString())
             binding.counterIdentifier.text = (counter+1).toString()
-            view.background = ContextCompat.getDrawable(
-                applicationContext,
-                R.drawable.imageview_border_background
-            )
+
+            if (viewModel.hasMob(rowPos, columnPos)) {
+                viewModel.markMob(rowPos, columnPos, false)
+                view.background = ContextCompat.getDrawable(
+                    applicationContext,
+                    R.drawable.imageview_border_background
+                )
+            }
         }
     }
 
@@ -54,19 +57,10 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 viewModel.startGame().collect {
                     binding.btStartGame.visibility = View.GONE
+                    viewModel.markMob(it.posX, it.posY)
                     showMob(it.posX, it.posY)
                 }
             }
-        }
-    }
-
-    private fun setEvents() {
-        lifecycleScope.launch {
-/*
-            viewModel.onMovements().collect {
-                binding.helloRoom.text = "Receiving movement at: ${it.posX}, ${it.posY}"
-            }
-*/
         }
     }
 
@@ -80,5 +74,4 @@ class MainActivity : AppCompatActivity() {
             4 -> binding.row5.getChildAt(posY).background = backgroundBlack
         }
     }
-
 }

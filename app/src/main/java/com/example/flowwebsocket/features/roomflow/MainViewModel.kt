@@ -1,7 +1,7 @@
 package com.example.flowwebsocket.features.roomflow
 
 import androidx.lifecycle.ViewModel
-import com.example.flowwebsocket.data.source.RoomDataSource
+import com.example.flowwebsocket.data.source.LocalDataSource
 import com.example.flowwebsocket.model.RoomEventData
 import com.example.flowwebsocket.socket.RoomDataSocket
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import java.util.UUID
 
 class MainViewModel(
-    private var roomDataSource: RoomDataSource
+    private var localDataSource: LocalDataSource
 ): ViewModel() {
 
     private val userName: String = UUID.randomUUID().toString()
@@ -37,8 +37,14 @@ class MainViewModel(
     fun startGame() = socket.startGame()
 
     fun saveRanking(total: Int) {
-        roomDataSource.saveRanking(userName, total)
+        localDataSource.saveRanking(userName, total)
     }
+
+    fun markMob(posX: Int, posY: Int, valueTobeMarked: Boolean = true) {
+        localDataSource.markMob(posX, posY, valueTobeMarked)
+    }
+
+    fun hasMob(posX: Int, posY: Int) = localDataSource.hasMobIn(posX, posY)
 
     fun closeConnection() {
         socket.closeConnection()
