@@ -5,6 +5,7 @@ import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.Formatter
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.flowwebsocket.R
 import com.example.flowwebsocket.databinding.ActivityMainBinding
@@ -18,7 +19,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    //private val viewModel by viewModels<MainViewModel>()
     private val viewModel: MainViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
 
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initComponents() {
-        this.title = getString(R.string.room_screen_title)
+        this.title = getString(R.string.room_flow_screen_title)
         setupScreenLayout {
             val counter = parseInt(binding.counterIdentifier.text.toString())
             binding.counterIdentifier.text = (counter+1).toString()
@@ -62,13 +62,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun setEvents() {
         lifecycleScope.launch {
+
+            viewModel.startGame().collect {
+                showMob(it.posX, it.posY)
+            }
+/*
             viewModel.mockedRealTimePositions().collect { roomData ->
                 binding.helloRoom.text = "${roomData.name}: posX: ${roomData.posX}, posY: ${roomData.posY}"
                 viewModel.move(posX = 90, posY = 90)
             }
+*/
             viewModel.onMovements().collect {
                 binding.helloRoom.text = "Receiving movement at: ${it.posX}, ${it.posY}"
             }
+        }
+    }
+
+    private fun showMob(posX: Int, posY: Int) {
+        val backgroundBlack = ContextCompat.getDrawable(applicationContext, R.mipmap.ic_zubat_foreground)
+        when(posX) {
+            0 -> binding.row1.getChildAt(posY).background = backgroundBlack
+            1 -> binding.row2.getChildAt(posY).background = backgroundBlack
+            2 -> binding.row3.getChildAt(posY).background = backgroundBlack
+            3 -> binding.row4.getChildAt(posY).background = backgroundBlack
+            4 -> binding.row5.getChildAt(posY).background = backgroundBlack
         }
     }
 

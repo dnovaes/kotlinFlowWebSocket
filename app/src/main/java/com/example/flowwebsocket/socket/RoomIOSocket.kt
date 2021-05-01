@@ -12,12 +12,8 @@ import timber.log.Timber
 
 class RoomDataSocket {
 
-    private val socket: Socket
+    private val socket: Socket = IO.socket(LOCAL_WEBSOCKET_HOST)
     private lateinit var userName: String
-
-    init {
-        socket = IO.socket(LOCAL_WEBSOCKET_HOST)
-    }
 
     fun openConnection(userName: String) {
         try {
@@ -28,6 +24,19 @@ class RoomDataSocket {
             e.printStackTrace()
             log("Error during OPEN_CONNECTION ocurred: $e")
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun startGame() = callbackFlow<RoomEventData.RoomData>{
+        socket.emit(EVENT_STARTGAME)
+        socket.on(EVENT_MOB_APPEARS) { args  ->
+            (args[0] as?JSONObject)?.apply {
+                val roomData = Gson().fromJson(this.toString(), RoomEventData.RoomData::class.java)
+                log("Zubat Appeared at: ${roomData.posX}, ${roomData.posY}")
+                offer(roomData)
+            }
+        }
+        awaitClose()
     }
 
     fun move(roomData: RoomEventData.RoomData) {
@@ -58,6 +67,8 @@ class RoomDataSocket {
 
     companion object {
         const val LOCAL_WEBSOCKET_HOST = "http://192.168.0.13:3000/"
+        const val EVENT_STARTGAME = "start_game"
+        const val EVENT_MOB_APPEARS = "mob_appears"
         const val EVENT_NEWPOSITION = "new_position"
         const val EVENT_SUBSCRIBE = "subscribe"
         const val EVENT_UNSUBSCRIBE = "unsubscribe"

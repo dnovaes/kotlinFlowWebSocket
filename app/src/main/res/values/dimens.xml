@@ -2,4 +2,5 @@
 <resources>
     <dimen name="imageview_size">150dp</dimen>
     <dimen name="counter_text_size">20sp</dimen>
+    <dimen name="room_screen_row_height">80dp</dimen>
 </resources>

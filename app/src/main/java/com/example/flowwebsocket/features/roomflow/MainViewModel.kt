@@ -34,6 +34,8 @@ class MainViewModel(
         socket.move(RoomEventData.RoomData(userName, posX, posY))
     }
 
+    fun startGame() = socket.startGame()
+
     fun saveRanking(total: Int) {
         roomDataSource.saveRanking(userName, total)
     }
