@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">FlowWebSocket</string>
+    <string name="title_main_activity">Make a move in the painel above</string>
+    <string name="room_screen_title">Don\'t let any zubats take our home!</string>
+    <string name="counter_initial_value">0</string>
 </resources>

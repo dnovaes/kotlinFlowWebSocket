@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -68,5 +69,13 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation "org.koin:koin-android:$koin"
+    implementation "org.koin:koin-androidx-scope:$koin"
+    implementation "org.koin:koin-androidx-viewmodel:$koin"
+
+    implementation "androidx.room:room-runtime:$room"
+    kapt "androidx.room:room-compiler:$room"
+    implementation "androidx.room:room-ktx:$room"
 
 }
