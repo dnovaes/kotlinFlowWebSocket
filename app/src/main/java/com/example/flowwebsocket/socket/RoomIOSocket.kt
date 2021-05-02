@@ -26,30 +26,47 @@ class RoomDataSocket {
         }
     }
 
+    fun startGame() {
+        socket.emit(EVENT_GAME_START)
+    }
+
     @ExperimentalCoroutinesApi
-    fun startGame() = callbackFlow<RoomEventData.RoomData>{
-        socket.emit(EVENT_STARTGAME)
-        socket.on(EVENT_MOB_APPEARS) { args  ->
-            (args[0] as?JSONObject)?.apply {
-                val roomData = Gson().fromJson(this.toString(), RoomEventData.RoomData::class.java)
-                log("Zubat Appeared at: ${roomData.posX}, ${roomData.posY}")
+    fun startedGame() = callbackFlow<Boolean> {
+        socket.on(EVENT_GAME_STARTED) {
+            offer(true)
+        }
+        awaitClose()
+    }
+
+    @ExperimentalCoroutinesApi
+    fun getMobs() = callbackFlow<RoomEventData.MobData>{
+        socket.on(EVENT_MOB_EVENT) { args  ->
+            (args[0] as? JSONObject)?.apply {
+                val roomData = Gson().fromJson(this.toString(), RoomEventData.MobData::class.java)
+                log("Mob event at: ${roomData.posX}, ${roomData.posY}, isNew: ${roomData.isNew}")
                 offer(roomData)
             }
         }
         awaitClose()
     }
 
-    fun move(roomData: RoomEventData.RoomData) {
+    fun removeMob(posX: Int, posY: Int) {
+        val mobData = RoomEventData.MobData("mob", posX, posY, false)
+        val dataJson = Gson().toJson(mobData)
+        socket.emit(EVENT_MOB_DESTROY, dataJson)
+    }
+
+    fun move(roomData: RoomEventData.MobData) {
         val dataJson = Gson().toJson(roomData)
         log("Emiting ${EVENT_NEWPOSITION}) roomdata: $roomData")
         socket.emit(EVENT_NEWPOSITION, dataJson)
     }
 
     @ExperimentalCoroutinesApi
-    fun listenOtherPlayers() = callbackFlow<RoomEventData.RoomData> {
+    fun listenOtherPlayers() = callbackFlow<RoomEventData.MobData> {
         socket.on(EVENT_NEWPOSITION) { args ->
             (args[0] as? JSONObject)?.apply {
-                val roomData = Gson().fromJson(this.toString(), RoomEventData.RoomData::class.java)
+                val roomData = Gson().fromJson(this.toString(), RoomEventData.MobData::class.java)
                 log("onNewPosition event listener) ${roomData.name}, ${roomData.posX}, ${roomData.posY}")
                 offer(roomData)
             }
@@ -58,7 +75,6 @@ class RoomDataSocket {
     }
 
     fun closeConnection() {
-        log("$userName closing connection")
         socket.emit(EVENT_UNSUBSCRIBE, userName)
         socket.disconnect()
         socket.off(EVENT_NEWPOSITION)
@@ -67,8 +83,10 @@ class RoomDataSocket {
 
     companion object {
         const val LOCAL_WEBSOCKET_HOST = "http://192.168.0.13:3000/"
-        const val EVENT_STARTGAME = "start_game"
-        const val EVENT_MOB_APPEARS = "mob_appears"
+        const val EVENT_GAME_START = "game_start"
+        const val EVENT_GAME_STARTED = "game_started"
+        const val EVENT_MOB_EVENT = "mob_event"
+        const val EVENT_MOB_DESTROY = "mob_destroy"
         const val EVENT_NEWPOSITION = "new_position"
         const val EVENT_SUBSCRIBE = "subscribe"
         const val EVENT_UNSUBSCRIBE = "unsubscribe"

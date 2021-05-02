@@ -32,46 +32,62 @@ class MainActivity : AppCompatActivity() {
 
     private fun initComponents() {
         this.title = getString(R.string.room_flow_screen_title)
-        setupScreenLayout { view, rowPos, columnPos ->
-            val counter = parseInt(binding.counterIdentifier.text.toString())
-            binding.counterIdentifier.text = (counter+1).toString()
+        setupScreenLayout(onClickCell = { view, rowPos, columnPos ->
 
             if (viewModel.hasMob(rowPos, columnPos)) {
-                viewModel.markMob(rowPos, columnPos, false)
+                updateMobCounter()
+                viewModel.updateMobCache(rowPos, columnPos, false)
+                viewModel.removeMob(rowPos, columnPos)
                 view.background = ContextCompat.getDrawable(
                     applicationContext,
                     R.drawable.imageview_border_background
                 )
             }
-        }
-    }
+        })
 
-    private fun setupScreenLayout(onClick: (View, Int, Int) -> Unit) {
-        binding.helloRoom.text = getString(R.string.title_main_activity)
-        binding.row1.setRowCells(this.applicationContext, 0, onClick)
-        binding.row2.setRowCells(this.applicationContext, 1, onClick)
-        binding.row3.setRowCells(this.applicationContext, 2, onClick)
-        binding.row4.setRowCells(this.applicationContext, 3, onClick)
-        binding.row5.setRowCells(this.applicationContext, 4, onClick)
-        binding.btStartGame.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.startGame().collect {
-                    binding.btStartGame.visibility = View.GONE
-                    viewModel.markMob(it.posX, it.posY)
-                    showMob(it.posX, it.posY)
+        lifecycleScope.launch {
+            viewModel.onStartGame().collect {
+                binding.btStartGame.visibility = View.GONE
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.onMobChange().collect {
+                viewModel.updateMobCache(it.posX, it.posY, it.isNew)
+                if (it.isNew) {
+                    updateCell(it.posX, it.posY, R.mipmap.ic_zubat_foreground)
+                } else {
+                    updateCell(it.posX, it.posY, R.drawable.imageview_border_background)
                 }
             }
         }
     }
 
-    private fun showMob(posX: Int, posY: Int) {
-        val backgroundBlack = ContextCompat.getDrawable(applicationContext, R.mipmap.ic_zubat_foreground)
+    private fun setupScreenLayout(onClickCell: (View, Int, Int) -> Unit) {
+        binding.helloRoom.text = getString(R.string.title_main_activity)
+        binding.row1.setRowCells(this.applicationContext, 0, onClickCell)
+        binding.row2.setRowCells(this.applicationContext, 1, onClickCell)
+        binding.row3.setRowCells(this.applicationContext, 2, onClickCell)
+        binding.row4.setRowCells(this.applicationContext, 3, onClickCell)
+        binding.row5.setRowCells(this.applicationContext, 4, onClickCell)
+        binding.btStartGame.setOnClickListener {
+            viewModel.startGame()
+        }
+    }
+
+    private fun updateMobCounter() {
+        val counter = parseInt(binding.counterIdentifier.text.toString())
+        binding.counterIdentifier.text = (counter+1).toString()
+    }
+
+    private fun updateCell(posX: Int, posY: Int, backgroundResource: Int) {
+        val background = ContextCompat.getDrawable(applicationContext, backgroundResource)
         when(posX) {
-            0 -> binding.row1.getChildAt(posY).background = backgroundBlack
-            1 -> binding.row2.getChildAt(posY).background = backgroundBlack
-            2 -> binding.row3.getChildAt(posY).background = backgroundBlack
-            3 -> binding.row4.getChildAt(posY).background = backgroundBlack
-            4 -> binding.row5.getChildAt(posY).background = backgroundBlack
+            0 -> binding.row1.getChildAt(posY).background = background
+            1 -> binding.row2.getChildAt(posY).background = background
+            2 -> binding.row3.getChildAt(posY).background = background
+            3 -> binding.row4.getChildAt(posY).background = background
+            4 -> binding.row5.getChildAt(posY).background = background
         }
     }
 }

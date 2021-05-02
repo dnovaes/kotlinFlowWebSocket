@@ -6,6 +6,7 @@ import com.example.flowwebsocket.model.RoomEventData
 import com.example.flowwebsocket.socket.RoomDataSocket
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.UUID
 
@@ -23,25 +24,20 @@ class MainViewModel(
     @ExperimentalCoroutinesApi
     fun onMovements() = socket.listenOtherPlayers()
 
-    fun mockedRealTimePositions() = flow {
-        for (roomData in mockedRoomData()) {
-            emit(roomData)
-            delay(2000L)
-        }
-    }
-
-    fun move(posX: Int, posY: Int) {
-        socket.move(RoomEventData.RoomData(userName, posX, posY))
-    }
-
     fun startGame() = socket.startGame()
 
-    fun saveRanking(total: Int) {
-        localDataSource.saveRanking(userName, total)
+    @ExperimentalCoroutinesApi
+    suspend fun onStartGame(): Flow<Boolean> = socket.startedGame()
+
+    @ExperimentalCoroutinesApi
+    suspend fun onMobChange(): Flow<RoomEventData.MobData> = socket.getMobs()
+
+    fun updateMobCache(posX: Int, posY: Int, valueTobeMarked: Boolean = true) {
+        localDataSource.markMob(posX, posY, valueTobeMarked)
     }
 
-    fun markMob(posX: Int, posY: Int, valueTobeMarked: Boolean = true) {
-        localDataSource.markMob(posX, posY, valueTobeMarked)
+    fun removeMob(posX: Int, posY: Int) {
+        socket.removeMob(posX, posY)
     }
 
     fun hasMob(posX: Int, posY: Int) = localDataSource.hasMobIn(posX, posY)
@@ -50,15 +46,8 @@ class MainViewModel(
         socket.closeConnection()
     }
 
-    private fun mockedRoomData() = listOf(
-        RoomEventData.RoomData("Player1", 10, 10),
-        RoomEventData.RoomData("Player2", 10, 9),
-        RoomEventData.RoomData("Player2", 9, 9),
-        RoomEventData.RoomData("Player1", 10, 5),
-        RoomEventData.RoomData("Player1", 10, 6),
-        RoomEventData.RoomData("Player1", 8, 5),
-        RoomEventData.RoomData("Player1", 7, 4),
-        RoomEventData.RoomData("Player2", 6, 9)
-    )
+    fun saveRanking(total: Int) {
+        localDataSource.saveRanking(userName, total)
+    }
 
 }
