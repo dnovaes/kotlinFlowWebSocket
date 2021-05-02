@@ -87,6 +87,22 @@
         android:weightSum="1.0">
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textview_dangerstate_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/blue"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/helloRoom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row5"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="@string/peacefull_string" />
+
     <Button
         android:id="@+id/bt_start_game"
         android:layout_width="wrap_content"

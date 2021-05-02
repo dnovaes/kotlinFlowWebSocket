@@ -20,6 +20,10 @@ class LocalDataSourceImpl(
             cache.unmarkMob(absolutePosition)
     }
 
+    override fun mobPercentage(): Double {
+        return cache.percentageMob()
+    }
+
     override fun saveRanking(username: String, total: Int) {
         val newRanking = RankingEntity(
             id = UUID.randomUUID().toString(),

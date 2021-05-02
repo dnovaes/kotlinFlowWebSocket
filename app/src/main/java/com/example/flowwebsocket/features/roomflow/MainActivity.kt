@@ -8,6 +8,8 @@ import androidx.lifecycle.lifecycleScope
 import com.example.flowwebsocket.R
 import com.example.flowwebsocket.databinding.ActivityMainBinding
 import com.example.flowwebsocket.extensions.setRowCells
+import com.example.flowwebsocket.features.roomflow.model.MobDangerState
+import com.example.flowwebsocket.socket.log
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Integer.parseInt
@@ -48,6 +50,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupEvents() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.dangerStateFlow.collect {
+                if (it == MobDangerState.Peacefull) {
+                    binding.textviewDangerstateDescription.visibility = View.INVISIBLE
+                } else {
+                    binding.textviewDangerstateDescription.visibility = View.VISIBLE
+                }
+                binding.textviewDangerstateDescription.text = it.description
+            }
+        }
+
         lifecycleScope.launch {
             viewModel.onStartGame().collect {
                 binding.btStartGame.visibility = View.GONE
@@ -82,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         binding.row5.setRowCells(this.applicationContext, 4, onClickCell)
         binding.btStartGame.setOnClickListener {
             viewModel.startGame()
+            binding.textviewDangerstateDescription.visibility = View.VISIBLE
         }
     }
 

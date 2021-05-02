@@ -6,5 +6,6 @@ interface MobCache {
     fun hasMobIn(absolutePosition: Int): Boolean
     fun markMob(absolutePosition: Int)
     fun unmarkMob(absolutePosition: Int)
+    fun percentageMob(): Double
     fun clearMobSet()
 }

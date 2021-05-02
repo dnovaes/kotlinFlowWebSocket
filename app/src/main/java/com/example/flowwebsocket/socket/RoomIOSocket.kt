@@ -82,14 +82,6 @@ class RoomDataSocket {
         awaitClose()
     }
 
-/*
-    fun onGameOver(onEvent: () -> Unit) {
-        socket.on(EVENT_GAME_OVER) {
-            onEvent.invoke()
-        }
-    }
-*/
-
     fun closeConnection() {
         socket.emit(EVENT_UNSUBSCRIBE, userName)
         socket.disconnect()

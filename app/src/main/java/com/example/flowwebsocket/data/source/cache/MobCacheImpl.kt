@@ -22,4 +22,12 @@ class MobCacheImpl: MobCache {
     override fun clearMobSet() {
         mobSet.clear()
     }
+
+    override fun percentageMob(): Double {
+        return mobSet.size/MAXIMUM_MOBS
+    }
+
+    companion object {
+        const val MAXIMUM_MOBS = 20.0
+    }
 }
