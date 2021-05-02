@@ -74,12 +74,10 @@ class RoomDataSocket {
         awaitClose()
     }
 
-    @ExperimentalCoroutinesApi
-    suspend fun onGameOver() = callbackFlow<Boolean> {
+    fun registerGameOverEvent(onEvent: () -> Unit) {
         socket.on(EVENT_GAME_OVER) {
-            offer(true)
+            onEvent.invoke()
         }
-        awaitClose()
     }
 
     fun closeConnection() {

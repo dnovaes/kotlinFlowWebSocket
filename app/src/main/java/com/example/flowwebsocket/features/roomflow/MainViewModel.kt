@@ -24,17 +24,22 @@ class MainViewModel(
     private val _dangerStateFlow: MutableStateFlow<MobDangerState> = MutableStateFlow(MobDangerState.Peacefull)
     val dangerStateFlow: StateFlow<MobDangerState> get() = _dangerStateFlow
 
+    private val _onGameOverFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val onGameOverFlow: StateFlow<Boolean> = _onGameOverFlow
+
     init {
         socket.openConnection(userName)
+        socket.registerGameOverEvent {
+            _onGameOverFlow.value = true
+        }
     }
 
-    fun startGame() = socket.startGame()
+    fun startGame() {
+        socket.startGame()
+    }
 
     @ExperimentalCoroutinesApi
     suspend fun onStartGame(): Flow<Boolean> = socket.startedGame()
-
-    @ExperimentalCoroutinesApi
-    suspend fun onGameOver(): Flow<Boolean> = socket.onGameOver()
 
     @ExperimentalCoroutinesApi
     suspend fun onMobChange(): Flow<RoomEventData.MobData> = socket.onMobEvent()
