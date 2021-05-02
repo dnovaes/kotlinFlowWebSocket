@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initComponents()
+        setupEvents()
     }
 
     override fun onDestroy() {
@@ -32,8 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initComponents() {
         this.title = getString(R.string.room_flow_screen_title)
-        setupScreenLayout(onClickCell = { view, rowPos, columnPos ->
 
+        setupScreenLayout(onClickCell = { view, rowPos, columnPos ->
             if (viewModel.hasMob(rowPos, columnPos)) {
                 updateMobCounter()
                 viewModel.updateMobCache(rowPos, columnPos, false)
@@ -44,7 +45,9 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         })
+    }
 
+    private fun setupEvents() {
         lifecycleScope.launch {
             viewModel.onStartGame().collect {
                 binding.btStartGame.visibility = View.GONE
@@ -59,6 +62,13 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     updateCell(it.posX, it.posY, R.drawable.imageview_border_background)
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.onGameOver().collect {
+                binding.imageviewGameoverBackground.visibility = View.VISIBLE
+                binding.imageviewGameoverForeground.visibility = View.VISIBLE
             }
         }
     }

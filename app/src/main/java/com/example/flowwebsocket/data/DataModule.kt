@@ -5,10 +5,13 @@ import com.example.flowwebsocket.data.source.LocalDataSourceImpl
 import com.example.flowwebsocket.data.source.RoomDatabaseClient
 import com.example.flowwebsocket.data.source.cache.MobCache
 import com.example.flowwebsocket.data.source.cache.MobCacheImpl
+import com.example.flowwebsocket.socket.RoomDataSocket
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-val networkModule = module { }
+val networkModule = module {
+    factory { RoomDataSocket() }
+}
 
 val databaseModule = module {
     single { RoomDatabaseClient.setupDatabase(context = androidContext()) }

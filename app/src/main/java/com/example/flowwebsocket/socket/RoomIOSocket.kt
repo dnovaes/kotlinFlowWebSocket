@@ -31,7 +31,7 @@ class RoomDataSocket {
     }
 
     @ExperimentalCoroutinesApi
-    fun startedGame() = callbackFlow<Boolean> {
+    suspend fun startedGame() = callbackFlow<Boolean> {
         socket.on(EVENT_GAME_STARTED) {
             offer(true)
         }
@@ -39,7 +39,7 @@ class RoomDataSocket {
     }
 
     @ExperimentalCoroutinesApi
-    fun getMobs() = callbackFlow<RoomEventData.MobData>{
+    suspend fun onMobEvent() = callbackFlow<RoomEventData.MobData>{
         socket.on(EVENT_MOB_EVENT) { args  ->
             (args[0] as? JSONObject)?.apply {
                 val roomData = Gson().fromJson(this.toString(), RoomEventData.MobData::class.java)
@@ -74,6 +74,22 @@ class RoomDataSocket {
         awaitClose()
     }
 
+    @ExperimentalCoroutinesApi
+    suspend fun onGameOver() = callbackFlow<Boolean> {
+        socket.on(EVENT_GAME_OVER) {
+            offer(true)
+        }
+        awaitClose()
+    }
+
+/*
+    fun onGameOver(onEvent: () -> Unit) {
+        socket.on(EVENT_GAME_OVER) {
+            onEvent.invoke()
+        }
+    }
+*/
+
     fun closeConnection() {
         socket.emit(EVENT_UNSUBSCRIBE, userName)
         socket.disconnect()
@@ -85,6 +101,7 @@ class RoomDataSocket {
         const val LOCAL_WEBSOCKET_HOST = "http://192.168.0.13:3000/"
         const val EVENT_GAME_START = "game_start"
         const val EVENT_GAME_STARTED = "game_started"
+        const val EVENT_GAME_OVER = "game_over"
         const val EVENT_MOB_EVENT = "mob_event"
         const val EVENT_MOB_DESTROY = "mob_destroy"
         const val EVENT_NEWPOSITION = "new_position"

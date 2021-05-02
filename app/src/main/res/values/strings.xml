@@ -3,4 +3,5 @@
     <string name="title_main_activity">Make a move in the painel above</string>
     <string name="room_flow_screen_title">Don\'t let the zubats take your home!</string>
     <string name="counter_initial_value">0</string>
+    <string name="bt_start_game">Start Game</string>
 </resources>
