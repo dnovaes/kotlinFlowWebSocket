@@ -8,11 +8,12 @@ import com.example.flowwebsocket.features.roomflow.model.MobDangerState.Companio
 import com.example.flowwebsocket.features.roomflow.model.MobDangerState.Companion.THRESHOLD_DANGER
 import com.example.flowwebsocket.features.roomflow.model.MobDangerState.Companion.THRESHOLD_PEACEFULL
 import com.example.flowwebsocket.model.RoomEventData
-import com.example.flowwebsocket.socket.RoomDataSocket
+import com.example.flowwebsocket.data.source.remote.RoomDataSocket
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import java.util.UUID
 
 class MainViewModel(
@@ -38,6 +39,17 @@ class MainViewModel(
         socket.startGame()
     }
 
+    suspend fun countdownEmitter() = flow<Int> {
+        var result = processingExample()
+        while (true) {
+            result++
+            emit(result)
+            kotlinx.coroutines.delay(1000L)
+        }
+    }
+
+    fun processingExample() = 1
+
     @ExperimentalCoroutinesApi
     suspend fun onStartGame(): Flow<Boolean> = socket.startedGame()
 
@@ -56,11 +68,13 @@ class MainViewModel(
     fun hasMob(posX: Int, posY: Int) = localDataSource.hasMobIn(posX, posY)
 
     fun closeConnection() {
+        localDataSource.mobClear()
         socket.closeConnection()
     }
 
     private fun updateDangerState() {
         val currentPercent = localDataSource.mobPercentage()
+        println("logd currentPercent: $currentPercent")
         when {
             (currentPercent > THRESHOLD_DANGER) -> _dangerStateFlow.value = MobDangerState.Emergency
             (currentPercent > THRESHOLD_CAUTION) -> _dangerStateFlow.value = MobDangerState.Danger

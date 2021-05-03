@@ -1,6 +1,6 @@
 package com.example.flowwebsocket.data.source.cache
 
-import com.example.flowwebsocket.socket.log
+import com.example.flowwebsocket.data.source.remote.log
 
 class MobCacheImpl: MobCache {
     override var mobSet: HashSet<Int> = hashSetOf()

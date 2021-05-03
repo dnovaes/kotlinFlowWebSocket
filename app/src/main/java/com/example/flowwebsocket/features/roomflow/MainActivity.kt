@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     binding.textviewDangerstateDescription.visibility = View.VISIBLE
                 }
+                println("logd dangerState: $it")
                 binding.textviewDangerstateDescription.text = it.description
             }
         }
@@ -75,6 +76,12 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     updateCell(it.posX, it.posY, R.drawable.imageview_border_background)
                 }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.countdownEmitter().collect {
+                binding.textviewTimer.text = "Timer: $it"
             }
         }
 

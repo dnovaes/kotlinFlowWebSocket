@@ -1,9 +1,10 @@
-package com.example.flowwebsocket.socket
+package com.example.flowwebsocket.data.source.remote
 
 import com.example.flowwebsocket.model.RoomEventData
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -40,14 +41,15 @@ class RoomDataSocket {
 
     @ExperimentalCoroutinesApi
     suspend fun onMobEvent() = callbackFlow<RoomEventData.MobData>{
-        socket.on(EVENT_MOB_EVENT) { args  ->
+        val listener = Emitter.Listener { args ->
             (args[0] as? JSONObject)?.apply {
                 val roomData = Gson().fromJson(this.toString(), RoomEventData.MobData::class.java)
                 log("Mob event at: ${roomData.posX}, ${roomData.posY}, isNew: ${roomData.isNew}")
                 offer(roomData)
             }
         }
-        awaitClose()
+        socket.on(EVENT_MOB_EVENT, listener)
+        awaitClose { socket.off(EVENT_MOB_EVENT, listener) }
     }
 
     fun removeMob(posX: Int, posY: Int) {
@@ -83,7 +85,6 @@ class RoomDataSocket {
     fun closeConnection() {
         socket.emit(EVENT_UNSUBSCRIBE, userName)
         socket.disconnect()
-        socket.off(EVENT_NEWPOSITION)
         socket.close()
     }
 

@@ -128,6 +128,18 @@
         app:layout_constraintTop_toTopOf="@id/row5" />
 
     <TextView
+        android:id="@+id/textview_timer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/blue"
+        android:text="Timer: 0"
+        app:layout_constraintTop_toBottomOf="@+id/helloRoom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/peacefull_string" />
+
+    <TextView
         android:id="@+id/counter_identifier"
         android:text="@string/counter_initial_value"
         android:textSize="@dimen/counter_text_size"

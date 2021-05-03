@@ -1,4 +1,4 @@
-package com.example.flowwebsocket.socket
+package com.example.flowwebsocket.data.source.remote
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
